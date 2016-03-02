@@ -1,5 +1,9 @@
 import unittest
 import tornado
+
+import sys
+sys.path.append(".") # to load create_gist
+
 from create_gist import *
 
 import io
