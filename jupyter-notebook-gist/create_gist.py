@@ -2,12 +2,18 @@ from notebook.utils import url_path_join
 from notebook.base.handlers import IPythonHandler
 from nbconvert.exporters.export import *
 from tornado.web import HTTPError
+import jupyter_core
 import base64
 import json
 import requests
 import tornado
 import os
 import logging
+
+try:
+    import ConfigParser as configParser  # python 2
+except:
+    import configparser as configParser  # python 3
 
 # Example usage: tornado_logger.error("This is an error!")
 tornado_logger = logging.getLogger("tornado.application")
@@ -349,9 +355,38 @@ def verify_gist_response(gist_response_json):
 def load_jupyter_server_extension(nb_server_app):
 
     # Extract our gist client details from the config:
+    Config = configParser.ConfigParser()
+
     cfg = nb_server_app.config["NotebookApp"]
-    BaseHandler.client_id = cfg["oauth_client_id"]
-    BaseHandler.client_secret = cfg["oauth_client_secret"]
+
+    gist_info_path = url_path_join(jupyter_core.paths.jupyter_config_dir(),
+                                   '/gist_info.ini')
+    try:
+        Config.read(gist_info_path)
+        BaseHandler.client_id = Config.get('JupyterNotebookGist', 'client_id')
+        BaseHandler.client_secret = Config.get('JupyterNotebookGist',
+                                               'client_secret')
+        cfg["oauth_client_id"] = BaseHandler.client_id
+        # We save the config here rather than directly into the
+        # jupyter_notebook_config.py because it spits out an error message
+        # stating that the key "oauth_client_id" doesn't exist
+
+    except configParser.Error as e:  # File is invalid or not found
+        nb_server_app.log.error("Error: Invalid Jupyter Notebook Gist "
+                                "config file!")
+
+        # Create the file
+        oauth_info = open(gist_info_path, 'w')
+        Config.add_section('JupyterNotebookGist')
+        Config.set('JupyterNotebookGist', 'client_id', 'MyClientId')
+        Config.set('JupyterNotebookGist', 'client_secret', 'MyClientSecret')
+        Config.write(oauth_info)
+        oauth_info.close()
+
+    else:  # No error
+
+        nb_server_app.log.info("Jupyter Notebook Gist extension "
+                               "loaded successfully.")
 
     web_app = nb_server_app.web_app
     host_pattern = '.*$'
