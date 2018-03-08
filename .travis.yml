@@ -13,3 +13,17 @@ script:
   - tox -v -e py
 after_success:
   - codecov
+jobs:
+  include:
+    - stage: deploy
+      python: 3.5
+      script: skip
+      deploy:
+        provider: pypi
+        user: jezdez
+        distributions: sdist bdist_wheel
+        password:
+          secure: NEED_TOKEN_HERE
+        on:
+          tags: true
+          repo: mozilla/jupyter-notebook-gist
