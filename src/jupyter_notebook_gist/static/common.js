@@ -100,7 +100,7 @@ define([
             force_download: force_download
         }
         utils.ajax({
-            url: "/download_notebook",
+            url: utils.url_path_join(utils.get_body_data("baseUrl"), "/download_notebook"),
             type: "POST",
             dataType: "json",
             data: JSON.stringify(nb_info)
