@@ -13,7 +13,7 @@ from jupyter_notebook_gist.handlers import (extract_code_from_args,
                                             raise_error, raise_github_error,
                                             verify_gist_response)
 from nbformat import write
-from nbformat.v4 import new_markdown_cell, new_notebook
+from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
 
 
 class TestError(unittest.TestCase):
@@ -327,7 +327,8 @@ class TestBaseHandler(unittest.TestCase):
 
         nb = new_notebook(
             cells=[
-                new_markdown_cell(u'Testing')
+                new_markdown_cell(u'Testing'),
+                new_code_cell(u'x = 123')
             ])
 
         with io.open(os.path.join(nbdir, fname), 'w',
