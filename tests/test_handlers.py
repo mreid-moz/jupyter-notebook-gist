@@ -334,9 +334,10 @@ class TestBaseHandler(unittest.TestCase):
                      encoding='utf-8') as f:
             write(nb, f, version=4)
 
-        nb_content, python_content = get_notebook_contents(fname)
+        nb_content, python_content, ext = get_notebook_contents(fname)
         self.assertTrue(len(nb_content) > 0)
         self.assertTrue(len(python_content) > 0)
+        assert ext == ".py"
 
         # Delete the temporary file
         os.remove(nbdir + "/" + fname)

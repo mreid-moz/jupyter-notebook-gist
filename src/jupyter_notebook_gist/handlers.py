@@ -72,23 +72,23 @@ class GistHandler(BaseHandler):
         filename, filename_no_ext = get_notebook_filename(nb_path)
 
         # Extract file contents given the path to the notebook
-        notebook_output, python_output = get_notebook_contents(nb_path)
+        notebook_output, script_output, ext = get_notebook_contents(nb_path)
 
         # Prepare and our github request to create the new gist
-        filename_with_py = filename_no_ext + ".py"
+        filename_with_ext = filename_no_ext + ext
         gist_contents = {
             "description": filename_no_ext,
             "public": False,
             "files": {
                 filename: {"filename": filename, "content": notebook_output},
-                filename_with_py: {"filename": filename_with_py,
-                                   "content": python_output}
+                filename_with_ext: {"filename": filename_with_ext,
+                                    "content": script_output}
             }
         }
 
         # Get the authenticated user's matching gist (if available)
         match_id = find_existing_gist_by_name(filename,
-                                              filename_with_py,
+                                              filename_with_ext,
                                               access_token)
 
         # If no gist with this name exists yet, create a new gist
@@ -257,11 +257,12 @@ def get_notebook_contents(nb_path):
     # Extract file contents given the path to the notebook
     try:
         notebook_output, _ = export_by_name("notebook", nb_path)
-        python_output, _ = export_by_name("python", nb_path)
+        script_output, script_resources = export_by_name("script", nb_path)
+
     except OSError:  # python 2 does not support FileNotFoundError
         raise_error("Couldn't export notebook contents")
 
-    return (notebook_output, python_output)
+    return (notebook_output, script_output, script_resources['output_extension'])
 
 
 def find_existing_gist_by_name(nb_filename, py_filename, access_token):
