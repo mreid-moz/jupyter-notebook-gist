@@ -326,6 +326,12 @@ class TestBaseHandler(unittest.TestCase):
         nbdir = os.getcwd()
 
         nb = new_notebook(
+            metadata={
+                'language_info': {
+                    'name': 'python',
+                    'file_extension': '.py'
+                }
+            },
             cells=[
                 new_markdown_cell(u'Testing'),
                 new_code_cell(u'x = 123')
