@@ -11,7 +11,7 @@ define([
         var port = loc.port;
 
         var base = proto + "//" + host;
-        if (parseInt(port) != 80) {
+        if ((proto == 'http' && parseInt(port) != 80) || (proto == 'https' && parseInt(port) != 443)) {
             base += ":" + port;
         }
         return base;
