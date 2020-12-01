@@ -13,7 +13,7 @@ from jupyter_notebook_gist.handlers import (extract_code_from_args,
                                             raise_error, raise_github_error,
                                             verify_gist_response)
 from nbformat import write
-from nbformat.v4 import new_markdown_cell, new_notebook
+from nbformat.v4 import new_code_cell, new_markdown_cell, new_notebook
 
 
 class TestError(unittest.TestCase):
@@ -326,17 +326,25 @@ class TestBaseHandler(unittest.TestCase):
         nbdir = os.getcwd()
 
         nb = new_notebook(
+            metadata={
+                'language_info': {
+                    'name': 'python',
+                    'file_extension': '.py'
+                }
+            },
             cells=[
-                new_markdown_cell(u'Testing')
+                new_markdown_cell(u'Testing'),
+                new_code_cell(u'x = 123')
             ])
 
         with io.open(os.path.join(nbdir, fname), 'w',
                      encoding='utf-8') as f:
             write(nb, f, version=4)
 
-        nb_content, python_content = get_notebook_contents(fname)
+        nb_content, python_content, ext = get_notebook_contents(fname)
         self.assertTrue(len(nb_content) > 0)
         self.assertTrue(len(python_content) > 0)
+        assert ext == ".py"
 
         # Delete the temporary file
         os.remove(nbdir + "/" + fname)
