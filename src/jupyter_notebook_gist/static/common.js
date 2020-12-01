@@ -11,7 +11,7 @@ define([
         var port = loc.port;
 
         var base = proto + "//" + host;
-        if (parseInt(port) != 80) {
+        if ((proto == 'http' && parseInt(port) != 80) || (proto == 'https' && parseInt(port) != 443)) {
             base += ":" + port;
         }
         return base;
@@ -100,7 +100,7 @@ define([
             force_download: force_download
         }
         utils.ajax({
-            url: "/download_notebook",
+            url: utils.url_path_join(utils.get_body_data("baseUrl"), "/download_notebook"),
             type: "POST",
             dataType: "json",
             data: JSON.stringify(nb_info)

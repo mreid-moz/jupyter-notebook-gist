@@ -13,7 +13,7 @@ define([
         // Characters like # get decoded by the github API and will mess up
         // getting the file path on the server if we use URI percent encoding,
         // so we use base64 instead
-        var nb_path = window.btoa(Jupyter.notebook.base_url + Jupyter.notebook.notebook_path);
+        var nb_path = window.btoa(Jupyter.notebook.notebook_path);
 
         // Start OAuth dialog
         window.open("https://github.com/login/oauth/authorize?client_id=" + github_client_id +

@@ -52,7 +52,7 @@ define([
                     "load all user gists",
                     "fa-list",
                     common.load_all_user_gists,
-                    "load_add_user_gists");
+                    "load_all_user_gists");
             }
         });
     }
